@@ -55,12 +55,17 @@ def display_pod_info(pod_info: dict):
     status = 'ON' if pod_info.get('runtime') else 'OFF'  # assuming the runtime field is null when the machine is off
     st.write(f'Pod status: {status}')
 
-    # Display resource usages
     if status == 'ON':
         st.write(f'Memory Usage: {pod_info["runtime"]["container"]["memoryPercent"]}%')
         st.write(f'CPU Usage: {pod_info["runtime"]["container"]["cpuPercent"]}%')
         st.write(f'GPU Memory Usage: {pod_info["runtime"]["gpus"][0]["memoryUtilPercent"]}%')
 
+        # Show ssh command
+        st.write('SSH command:')
+        for port in pod_info['runtime']['ports']:
+            if port['privatePort'] == 22 and port['isIpPublic']:
+                st.code(f'ssh root@{port["ip"]} -p {port["publicPort"]} -i ~/.ssh/id_ed25519')
+        st.write("(Private key can be found [here](https://serialignment-qo78019.slack.com/archives/C0523R9M58C/p1689396107110739?thread_ts=1689392014.184409&cid=C0523R9M58C) on slack.)")
 
 
 def main():
